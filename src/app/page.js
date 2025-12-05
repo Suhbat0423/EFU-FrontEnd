@@ -6,7 +6,7 @@ import Footer from "../../components/footer";
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col justify-between">
-      <section className="relative w-full bg-gradient-to-br from-blue-900 to-blue-700 text-white overflow-hidden">
+      <section className="relative w-full bg-linear-to-br from-blue-900 to-blue-700 text-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-8 py-24 lg:py-32 flex flex-col lg:flex-row items-center justify-between gap-12">
           <div className="flex flex-col gap-8 max-w-2xl">
             <Image
@@ -36,7 +36,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <Image
               src={Logo}
               width={420}
