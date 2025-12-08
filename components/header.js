@@ -5,15 +5,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "../assets/Logo.png";
 import { useAuth } from "@/store/authStore";
+import { useEffect, useState } from "react";
 
 const Header = () => {
-  const { isAuth, logout } = useAuth();
+  const { isAuth, logout, user: authUser } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
     logout();
     router.push("/");
   };
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const user = authUser;
 
   return (
     <div className="w-full bg-white shadow-sm sticky top-0 z-50">
@@ -30,14 +39,18 @@ const Header = () => {
         </Link>
 
         <div className="flex items-center gap-4">
-          <Link href="/achievements">
-            <h1 className="text-blue-600 relative inline-block after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-0.5 after:bg-current after:transform after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-left me-4">
-              Амжилтууд
-            </h1>
-          </Link>
-
-          {isAuth ? (
+          {mounted && isAuth ? (
             <div className="flex items-center gap-4">
+              <span className="text-gray-500 whitespace-nowrap">
+                Сайн уу?{user?.firstname ? ` ${user.firstname}` : ""}
+              </span>
+
+              <Link href="/achievements">
+                <h1 className="text-blue-600 relative inline-block after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-0.5 after:bg-current after:transform after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-left me-4">
+                  Амжилтууд
+                </h1>
+              </Link>
+
               <Link href="/profile">
                 <h1 className="text-blue-600 relative inline-block after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-0.5 after:bg-current after:transform after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-left me-4">
                   Нүүр хуудас

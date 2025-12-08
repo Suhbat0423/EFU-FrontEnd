@@ -22,6 +22,9 @@ export const useAuth = create((set) => {
     login: async (email, password) => {
       try {
         const result = await login(email, password);
+        if (result?.error) {
+          return result;
+        }
 
         // normalize token from various possible response shapes
         const token =
@@ -47,7 +50,12 @@ export const useAuth = create((set) => {
 
         return result;
       } catch (error) {
-        throw error;
+        return {
+          error: true,
+          statusCode: 0,
+          statusText: (error && error.message) || "Network error",
+          message: "Нэвтрэх үед алдаа гарлаа.",
+        };
       }
     },
     setUser: (user) => {

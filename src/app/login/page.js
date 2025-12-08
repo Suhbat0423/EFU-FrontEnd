@@ -25,7 +25,16 @@ export default function Login() {
     try {
       const result = await authLogin(username, password);
       console.log("Login successful:", result);
-      // persist user in store/localStorage if backend returned it
+      // If backend returned a structured error, show message and stop
+      if (result?.error) {
+        setError(
+          result?.message ||
+            (result?.statusCode === 401
+              ? "Имэйл эсвэл нууц үг буруу байна."
+              : "Нэвтрэх үед алдаа гарлаа. Сервер зөв ажиллаж буй эсэхийг шалгана уу.")
+        );
+        return;
+      }
       const userFromResult =
         result?.data ||
         result?.user ||
@@ -39,7 +48,6 @@ export default function Login() {
         console.log("login page: no user in login response, attempting /me");
       }
 
-      // normalize token from possible response shapes
       const token =
         result?.token ||
         result?.accessToken ||
@@ -75,10 +83,18 @@ export default function Login() {
       }
     } catch (err) {
       console.error("Login failed:", err);
-      setError(
-        err.message ||
-          "Login failed. Please check your credentials and ensure the server is running."
-      );
+      const msg = String(err?.message || "").toLowerCase();
+      if (
+        msg.includes("401") ||
+        msg.includes("unauthorized") ||
+        msg.includes("invalid")
+      ) {
+        setError("Имэйл эсвэл нууц үг буруу байна.");
+      } else {
+        setError(
+          "Нэвтрэх үед алдаа гарлаа. Сервер зөв ажиллаж буй эсэхийг шалгана уу."
+        );
+      }
     } finally {
       setLoading(false);
     }
