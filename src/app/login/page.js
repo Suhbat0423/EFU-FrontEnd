@@ -25,7 +25,6 @@ export default function Login() {
     try {
       const result = await authLogin(username, password);
       console.log("Login successful:", result);
-      // If backend returned a structured error, show message and stop
       if (result?.error) {
         setError(
           result?.message ||
@@ -36,7 +35,7 @@ export default function Login() {
         return;
       }
       const userFromResult =
-        result?.data ||
+        (result && typeof result === "object" ? result.data : null) ||
         result?.user ||
         (result?.firstname || result?.lastname
           ? { firstname: result.firstname, lastname: result.lastname }
@@ -45,7 +44,7 @@ export default function Login() {
         setUser(userFromResult);
         console.log("login page: persisted user:", userFromResult);
       } else {
-        console.log("login page: no user in login response, attempting /me");
+        console.log("login page: no user in login response");
       }
 
       const token =
@@ -53,30 +52,7 @@ export default function Login() {
         result?.accessToken ||
         result?.data?.token ||
         result?.data?.accessToken;
-      if (!userFromResult && token) {
-        try {
-          const resp = await fetch(`${API_URL}me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (resp.ok) {
-            const me = await resp.json();
-            if (me) {
-              setUser(me);
-              console.log("login page: /me returned user:", me);
-            } else {
-              console.log("login page: /me returned no body");
-            }
-          } else {
-            console.log(
-              "login page: /me fetch failed:",
-              resp.status,
-              resp.statusText
-            );
-          }
-        } catch (e) {
-          console.error("login page: /me fetch error:", e);
-        }
-      }
+      // No /me endpoint available; rely solely on login response
 
       if (token) {
         router.push("/achievements");

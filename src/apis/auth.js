@@ -1,7 +1,9 @@
 import { API_URL } from "./common";
 
+const commonnURL = API_URL;
+
 export const login = async (email, password) => {
-  const url = `${API_URL}login`;
+  const url = `${commonnURL}login`;
   const body = JSON.stringify({ email, password });
 
   try {
@@ -10,34 +12,36 @@ export const login = async (email, password) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: body,
+      body,
     });
 
+    // Handle API error
     if (!res.ok) {
+      let errorMessage = res.statusText;
+
+      try {
+        const errBody = await res.json();
+        errorMessage = errBody?.message || res.statusText;
+      } catch {}
+
       return {
         error: true,
         statusCode: res.status,
-        statusText:
-          (await (async () => {
-            try {
-              const errBody = await res.json();
-              return errBody?.message || res.statusText;
-            } catch {
-              return res.statusText;
-            }
-          })()) || "",
+        statusText: errorMessage,
         message: "Имэйл эсвэл нууц үг буруу байна.",
       };
     }
 
+    // Success
     const data = await res.json();
     return data;
   } catch (error) {
-    // Return a structured error; caller can decide how to display
+    console.error("Login error:", error);
+
     return {
       error: true,
       statusCode: 0,
-      statusText: (error && error.message) || "Network error",
+      statusText: error?.message || "Network error",
       message: "Нэвтрэх үед алдаа гарлаа.",
     };
   }
