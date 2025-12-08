@@ -14,7 +14,6 @@ export const login = async (email, password) => {
     });
 
     if (!res.ok) {
-      // Return a structured error instead of throwing to avoid console errors in UI
       return {
         error: true,
         statusCode: res.status,
